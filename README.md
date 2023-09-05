@@ -1,5 +1,5 @@
 # Modification to https://github.com/KojiKobayashi/iterative_closest_point_2d
-Add support for opencv2 and py3
+Add support for opencv3 and py3
 
 # iterative_closest_point_2d
 
