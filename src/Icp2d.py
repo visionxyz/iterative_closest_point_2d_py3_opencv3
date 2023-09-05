@@ -44,37 +44,37 @@ def is_converge(Tr, scale):
 def icp(d1, d2, max_iterate = 100):
     src = np.array([d1.T], copy=True).astype(np.float32)
     dst = np.array([d2.T], copy=True).astype(np.float32)
-    
-    knn = cv2.KNearest()
+
+    knn = cv2.ml.KNearest_create()
     responses = np.array(range(len(d2[0]))).astype(np.float32)
-    knn.train(src[0], responses)
-        
+    knn.train(src[0], cv2.ml.ROW_SAMPLE, responses)
+
     Tr = np.array([[np.cos(0), -np.sin(0), 0],
                    [np.sin(0), np.cos(0),  0],
                    [0,         0,          1]])
 
     dst = cv2.transform(dst, Tr[0:2])
-    max_dist = sys.maxint
-    
+    max_dist = sys.maxsize
+
     scale_x = np.max(d1[0]) - np.min(d1[0])
     scale_y = np.max(d1[1]) - np.min(d1[1])
     scale = max(scale_x, scale_y)
-       
+
     for i in range(max_iterate):
-        ret, results, neighbours, dist = knn.find_nearest(dst[0], 1)
-        
-        indeces = results.astype(np.int32).T     
-        indeces = del_miss(indeces, dist, max_dist)  
-        
-        T = cv2.estimateRigidTransform(dst[0, indeces], src[0, indeces], True)
+        ret, results, neighbours, dist = knn.findNearest(dst[0], 1)
+
+        indeces = results.astype(np.int32).T
+        indeces = del_miss(indeces, dist, max_dist)
+
+        T = cv2.estimateAffine2D(dst[0, indeces], src[0, indeces], True)[0]
 
         max_dist = np.max(dist)
         dst = cv2.transform(dst, T)
         Tr = np.dot(np.vstack((T,[0,0,1])), Tr)
-        
+
         if (is_converge(T, scale)):
             break
-        
+
     return Tr[0:2]
 
 # <codecell>
@@ -109,11 +109,11 @@ if __name__ == "__main__":
     plt.plot(dst[0].T[0], dst[0].T[1])
     plt.show()
     
-    print ret[0][0] * ret[0][0] + ret[0][1] * ret[0][1]
-    print np.arccos(ret[0][0]) / 2 / np.pi * 360
-    print np.arcsin(ret[0][1]) / 2 / np.pi * 360
+    print(ret[0][0] * ret[0][0] + ret[0][1] * ret[0][1])
+    print(np.arccos(ret[0][0]) / 2 / np.pi * 360)
+    print(np.arcsin(ret[0][1]) / 2 / np.pi * 360)
 
-    print ret
+    print(ret)
 
 # <codecell>
 
