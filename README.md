@@ -1,3 +1,6 @@
+# Modification to https://github.com/KojiKobayashi/iterative_closest_point_2d
+Add support for opencv2 and py3
+
 # iterative_closest_point_2d
 
 inspired by http://stackoverflow.com/questions/20120384/iterative-closest-point-icp-implementation-on-python
